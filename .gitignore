@@ -1,0 +1,58 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+myvenv/
+ENV/
+
+# Django specific
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+
+# Database
+*.sqlite3
+*.db
+
+# Media / Uploaded files
+/media/
+/staticfiles/
+/static/
+
+# Django cache
+__pycache__/
+
+# Secret key
+.env
+*.env
+config/settings/local.py
+config/settings/.env
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+
+# Node modules (if using frontend frameworks like React)
+node_modules/
+
+# Build files
+build/
+dist/
+
+# Migrations (optional, but generally should be tracked)
+*/migrations/*.pyc
+*/migrations/*.pyo
+*/migrations/__pycache__/
