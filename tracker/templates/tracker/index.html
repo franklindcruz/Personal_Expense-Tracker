@@ -1,11 +1,11 @@
 {% extends 'tracker/base.html' %}
-
+{% load static %}
 {% block content %}
 
 <h1>Expense Tracker</h1>
 <div class="container">
   <div class="header">
-    <img src="https://i.ibb.co/jfScDTC/budget.png" alt="Expense Tracker" />
+    <img src="{% static 'images/calculator.jpg' %}" alt="Expense Tracker" />
     <div class="balance-container">
       <h2>Your Balance</h2>
       <h2 id="balance" class="balance">
@@ -61,7 +61,7 @@
     </div>
     <button class="btn" type="submit">Add transaction</button>
   </form>
-  
+
 </div>
 
 
