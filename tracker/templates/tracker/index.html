@@ -5,13 +5,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="{% static 'css/tracker/styles.css' %}">
   <title>{% block title %}Expense Tracker{% endblock %}</title>
 </head>
 
 <body>
-
   <h1>Expense Tracker</h1>
   <div class="container">
     <div class="header">
@@ -34,26 +32,62 @@
     <h3>History</h3>
     <ul id="list" class="list"></ul>
     <h3>Add new transaction</h3>
-    <form id="form">
+
+    <form id="form" method="post" action="{% url 'index' %}">
+      {% csrf_token %}
       <div class="form-control">
         <label for="text">Description</label>
-        <input type="text" id="text" placeholder="Enter description..." />
+        <input type="text" name="description" id="text" placeholder="Enter description..." required />
       </div>
       <div class="form-control">
         <label for="amount">Amount <br />
           <small>(-100 = expense, 100 = income)</small></label>
-        <input type="number" id="amount" placeholder="Enter amount..." />
+        <input type="number" name="amount" id="amount" placeholder="Enter amount..." required />
       </div>
-      <button class="btn">Add transaction</button>
+      <button class="btn" type="submit">Add transaction</button>
     </form>
   </div>
+
   <!-- Notification -->
   <div class="notification-container" id="notification">
     <p>Please add a description and amount</p>
   </div>
 
-  <script src="{% static 'js/tracker/scripts.js' %}"></script>
+  <!-- Scripts -->
+  <!-- <script src="{% static 'js/tracker/script.js' %}"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  {% if messages %}
+  <script>
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+
+    {% for message in messages %}
+    let iconType = "info"; // Default type
+    if ("{{ message.tags }}".includes("success")) {
+      iconType = "success";
+    } else if ("{{ message.tags }}".includes("error")) {
+      iconType = "error";
+    } else if ("{{ message.tags }}".includes("warning")) {
+      iconType = "warning";
+    }
+
+    Toast.fire({
+      icon: iconType,
+      title: `{{ message|safe }}`
+    });
+    {% endfor %}
+  </script>
+  {% endif %}
 </body>
 
 </html>
