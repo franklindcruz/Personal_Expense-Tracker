@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/tracker/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <title>Expense-Tracker| Django Project</title>
+</head>
+
+<body>
+
+  {% block content %}{% endblock %}
+
+  <!-- Scripts -->
+  <script src="{% static 'js/tracker/scripts.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+  {% if messages %}
+  <script>
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+
+    {% for message in messages %}
+    let iconType = "info"; // Default type
+    if ("{{ message.tags }}".includes("success")) {
+      iconType = "success";
+    } else if ("{{ message.tags }}".includes("error")) {
+      iconType = "error";
+    } else if ("{{ message.tags }}".includes("warning")) {
+      iconType = "warning";
+    }
+
+    Toast.fire({
+      icon: iconType,
+      title: `{{ message|safe }}`
+    });
+    {% endfor %}
+  </script>
+  {% endif %}
+</body>
+
+</html>

@@ -1,93 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load static %}
+{% extends 'tracker/base.html' %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/tracker/styles.css' %}">
-  <title>{% block title %}Expense Tracker{% endblock %}</title>
-</head>
+{% block content %}
 
-<body>
-  <h1>Expense Tracker</h1>
-  <div class="container">
-    <div class="header">
-      <img src="https://i.ibb.co/jfScDTC/budget.png" alt="Expense Tracker" />
-      <div class="balance-container">
-        <h2>Your Balance</h2>
-        <h2 id="balance" class="balance">$0.00</h2>
-      </div>
+<h1>Expense Tracker</h1>
+<div class="container">
+  <div class="header">
+    <img src="https://i.ibb.co/jfScDTC/budget.png" alt="Expense Tracker" />
+    <div class="balance-container">
+      <h2>Your Balance</h2>
+      <h2 id="balance" class="balance">
+        <i class="fa-solid fa-indian-rupee-sign"></i> {{ current_balance.balance }}
+      </h2>
     </div>
-    <div class="inc-exp-container">
-      <div>
-        <h4>Income</h4>
-        <p id="money-plus" class="money plus">+$0.00</p>
-      </div>
-      <div>
-        <h4>Expenses</h4>
-        <p id="money-minus" class="money minus">-$0.00</p>
-      </div>
-    </div>
-    <h3>History</h3>
-    <ul id="list" class="list"></ul>
-    <h3>Add new transaction</h3>
-
-    <form id="form" method="post" action="{% url 'index' %}">
-      {% csrf_token %}
-      <div class="form-control">
-        <label for="text">Description</label>
-        <input type="text" name="description" id="text" placeholder="Enter description..." required />
-      </div>
-      <div class="form-control">
-        <label for="amount">Amount <br />
-          <small>(-100 = expense, 100 = income)</small></label>
-        <input type="number" name="amount" id="amount" placeholder="Enter amount..." required />
-      </div>
-      <button class="btn" type="submit">Add transaction</button>
-    </form>
   </div>
 
-  <!-- Notification -->
-  <div class="notification-container" id="notification">
-    <p>Please add a description and amount</p>
+  <div class="inc-exp-container">
+    <div>
+      <h4>Income</h4>
+      <p id="money-plus" class="money plus">
+        <i class="fa-solid fa-indian-rupee-sign"></i> {{ income }}
+      </p>
+    </div>
+    <div>
+      <h4>Expenses</h4>
+      <p id="money-minus" class="money minus">
+        <i class="fa-solid fa-indian-rupee-sign"></i> {{ expense }}
+      </p>
+    </div>
   </div>
 
-  <!-- Scripts -->
-  <!-- <script src="{% static 'js/tracker/script.js' %}"></script> -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  {% if messages %}
-  <script>
-    const Toast = Swal.mixin({
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-      }
-    });
 
-    {% for message in messages %}
-    let iconType = "info"; // Default type
-    if ("{{ message.tags }}".includes("success")) {
-      iconType = "success";
-    } else if ("{{ message.tags }}".includes("error")) {
-      iconType = "error";
-    } else if ("{{ message.tags }}".includes("warning")) {
-      iconType = "warning";
-    }
+  <h3>History</h3>
 
-    Toast.fire({
-      icon: iconType,
-      title: `{{ message|safe }}`
-    });
+  <ul id="list" class="list">
+    {% for transaction in transactions %}
+    <li class="{% if transaction.expense_type == 'Debit' %} minus {% else %} plus {% endif %}">
+      {{ transaction.description }}
+      <span>{{ transaction.amount }}</span>
+      <a class="delete-btn" href="#" data-url="{% url 'delete-transaction' transaction.id %}">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </a>
+    </li>
     {% endfor %}
-  </script>
-  {% endif %}
-</body>
+  </ul>
 
-</html>
+
+  <h3>Add new transaction</h3>
+
+  <form id="form" method="post" action="{% url 'index' %}">
+    {% csrf_token %}
+    <div class="form-control">
+      <label for="text">Description</label>
+      <input type="text" name="description" id="text" placeholder="Enter description..." required />
+    </div>
+    <div class="form-control">
+      <label for="amount">Amount <br />
+        <small>(-100 = expense, 100 = income)</small></label>
+      <input type="number" name="amount" id="amount" placeholder="Enter amount..." required />
+    </div>
+    <button class="btn" type="submit">Add transaction</button>
+  </form>
+  
+</div>
+
+
+
+{% endblock content %}
