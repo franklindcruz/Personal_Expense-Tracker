@@ -2,68 +2,79 @@
 {% load static %}
 {% block content %}
 
-<h1>Expense Tracker</h1>
-<div class="container">
-  <div class="header">
-    <img src="{% static 'images/calculator.jpg' %}" alt="Expense Tracker" />
-    <div class="balance-container">
-      <h2>Your Balance</h2>
-      <h2 id="balance" class="balance">
-        <i class="fa-solid fa-indian-rupee-sign"></i> {{ current_balance.balance }}
-      </h2>
+<div class="container mt-5">
+  <h1 class="text-center text-primary fw-bold">Expense Tracker</h1>
+
+  <!-- Balance Card -->
+  <div class="card shadow-sm p-4 mb-4">
+    <div class="row align-items-center text-center">
+      <div class="col-md-4">
+        <img src="{% static 'images/calculator.jpg' %}" class="img-fluid" alt="Expense Tracker" width="100">
+      </div>
+      <div class="col-md-8">
+        <h4 class="fw-semibold">Your Balance</h4>
+        <h2 class="text-success fw-bold">
+          <i class="fa-solid fa-indian-rupee-sign"></i> {{ current_balance.balance }}
+        </h2>
+      </div>
     </div>
   </div>
 
-  <div class="inc-exp-container">
-    <div>
-      <h4>Income</h4>
-      <p id="money-plus" class="money plus">
-        <i class="fa-solid fa-indian-rupee-sign"></i> {{ income }}
-      </p>
+  <!-- Income & Expenses -->
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card border-success shadow-sm p-3">
+        <h4 class="text-success fw-bold">Income</h4>
+        <p class="fs-4 text-success fw-bold">
+          <i class="fa-solid fa-indian-rupee-sign"></i> {{ income }}
+        </p>
+      </div>
     </div>
-    <div>
-      <h4>Expenses</h4>
-      <p id="money-minus" class="money minus">
-        <i class="fa-solid fa-indian-rupee-sign"></i> {{ expense }}
-      </p>
+    <div class="col-md-6">
+      <div class="card border-danger shadow-sm p-3">
+        <h4 class="text-danger fw-bold">Expenses</h4>
+        <p class="fs-4 text-danger fw-bold">
+          <i class="fa-solid fa-indian-rupee-sign"></i> {{ expense }}
+        </p>
+      </div>
     </div>
   </div>
 
+  <!-- Transaction History -->
+  <div class="card shadow-sm mt-4 p-3">
+    <h3 class="fw-bold">Transaction History</h3>
+    <ul class="list-group list-group-flush">
+      {% for transaction in transactions %}
+      <li class="list-group-item d-flex justify-content-between align-items-center 
+        {% if transaction.expense_type == 'Debit' %} text-danger {% else %} text-success {% endif %}">
+        <span>{{ transaction.description }}</span>
+        <span class="fw-bold">{{ transaction.amount }}</span>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'delete-transaction' transaction.id %}">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
 
-
-  <h3>History</h3>
-
-  <ul id="list" class="list">
-    {% for transaction in transactions %}
-    <li class="{% if transaction.expense_type == 'Debit' %} minus {% else %} plus {% endif %}">
-      {{ transaction.description }}
-      <span>{{ transaction.amount }}</span>
-      <a class="delete-btn" href="#" data-url="{% url 'delete-transaction' transaction.id %}">
-        <i class="fa-solid fa-circle-xmark"></i>
-      </a>
-    </li>
-    {% endfor %}
-  </ul>
-
-
-  <h3>Add new transaction</h3>
-
-  <form id="form" method="post" action="{% url 'index' %}">
-    {% csrf_token %}
-    <div class="form-control">
-      <label for="text">Description</label>
-      <input type="text" name="description" id="text" placeholder="Enter description..." required />
-    </div>
-    <div class="form-control">
-      <label for="amount">Amount <br />
-        <small>(-100 = expense, 100 = income)</small></label>
-      <input type="number" name="amount" id="amount" placeholder="Enter amount..." required />
-    </div>
-    <button class="btn" type="submit">Add transaction</button>
-  </form>
+  <!-- Add New Transaction -->
+  <div class="card shadow-sm mt-4 p-4">
+    <h3 class="fw-bold">Add New Transaction</h3>
+    <form method="post" action="{% url 'index' %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="text" class="form-label">Description</label>
+        <input type="text" name="description" id="text" class="form-control" placeholder="Enter description..." required>
+      </div>
+      <div class="mb-3">
+        <label for="amount" class="form-label">Amount</label>
+        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter amount..." required>
+        <small class="text-muted">(-100 = expense, 100 = income)</small>
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Add Transaction</button>
+    </form>
+  </div>
 
 </div>
 
-
-
-{% endblock content %}
+{% endblock %}

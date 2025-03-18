@@ -2,15 +2,118 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import TrackingHistory, CurrentBalance
 from decimal import Decimal
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.shortcuts import get_object_or_404
-from django.db.models import F
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout, authenticate
+from django.db.models import Q
+from django.db import IntegrityError
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+
+    if request.method == "POST":
+        username = request.POST.get("username","").strip()
+        first_name = request.POST.get("first_name","").strip()
+        last_name = request.POST.get("last_name","").strip()
+        email = request.POST.get("email","").strip()
+        password = request.POST.get("password","").strip()
+
+        if not all([username, first_name, last_name, email, password]):
+            messages.warning(request, "All fields are required.")
+            return redirect("register")
+
+        # Check if user with the given email or username exists
+        if User.objects.filter(Q(email=email) | Q(username=username)).exists():
+            messages.warning(
+                request, "A user with that email or username already exists."
+            )
+            return redirect("register")
+
+        try:
+            user = User.objects.create_user(
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                password=password,
+            )
+        except IntegrityError:
+            messages.error(
+                request,
+                "An error occurred while creating your account. Please try again.",
+            )
+            return render(
+                request,
+                "tracker/register.html",
+                {
+                    "username": username,
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "email": email,
+                },
+            )
+
+        login(request, user)
+        messages.success(request, "Account created successfully.")
+        return redirect("index")
+
+    return render(request, "tracker/register.html")
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "").strip()
+
+        # Check for empty fields
+        if not email or not password:
+            messages.warning(request, "All fields are required.")
+            return redirect("login")
+
+        # Get the user by email
+        user = User.objects.filter(email=email).first()
+
+        # Check if the user exists
+        if not user:
+            messages.error(
+                request, "No account exists with this email. Please register."
+            )
+            return redirect("login")
+
+        # Authenticate the user (Django's authenticate function uses username, not email)
+        user = authenticate(request, username=user.username, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Logged in successfully.")
+            return redirect("index")
+        else:
+            messages.error(request, "Invalid email or password.")
+            return redirect("login")
+
+    return render(request, "tracker/login.html")
+
+
+def logout_view(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    logout(request)
+    messages.success(request, "Logged out successfully.")
+    return redirect("login")
 
 
 def index(request):
     if request.method == "POST":
-        description = request.POST.get("description", "").strip()
-        amount_str = request.POST.get("amount", "").strip()
+        description = request.POST.get("description").strip()
+        amount_str = request.POST.get("amount").strip()
         print(type(amount_str))
         # Validate description
         if not description:
