@@ -25,10 +25,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = "accounts.CustomUser"
 
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin", 
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "tracker",
+    "accounts",
 ]
 
 MIDDLEWARE = [
@@ -71,13 +74,29 @@ TEMPLATES = [
 WSGI_APPLICATION = "expense_tracker.wsgi.application"
 
 
+JAZZMIN_SETTINGS = {
+    "site_title": "Expense Tracker Admin",
+    "site_header": "Expense Tracker",
+    "site_brand": "Expense Tracker",
+    "welcome_sign": "Welcome to Expense Tracker Admin",
+    "copyright": "Expense Tracker Inc.",
+    "search_model": "auth.User",
+}
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",
+}
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT"),
     }
 }
 

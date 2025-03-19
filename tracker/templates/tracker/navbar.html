@@ -8,15 +8,16 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto">
         {% if user.is_authenticated %}
-        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'index' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'all-transactions' %}">Transaction List</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Expenses</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Reports</a></li>
         {% endif %}
       </ul>
       <ul class="navbar-nav ms-auto">
         {% if user.is_authenticated %}
-        <li class="nav-item"><a class="nav-link disabled">Hello, {{ user.username }}</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+        <li class="nav-item"><a class="nav-link disabled mx-lg-5 fw-bold">Hi, {{ user.username }}</a></li>
+        <li class="nav-item"><a class="btn btn-outline-danger fw-bold" href="{% url 'logout' %}">Logout</a></li>
         {% else %}
         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>

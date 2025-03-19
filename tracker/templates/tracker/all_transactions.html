@@ -1,0 +1,57 @@
+{% extends 'tracker/base.html' %}
+{% block title %}All Transactions{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-3 text-center">All Transactions</h1>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="{% url 'index' %}" class="btn btn-outline-secondary">
+      <i class="fa-solid fa-arrow-left"></i> Back
+    </a>
+  </div>
+
+  {% if transactions %}
+  <ul class="list-group">
+    <p class="fw-bold mt-4">Total Transactions: {{ transactions|length }}</p>
+    {% for transaction in transactions %}
+    <li class="list-group-item">
+      <div class="d-flex justify-content-between align-items-center">
+        <!-- Left: Description and Timestamp -->
+        <div class="flex-grow-1">
+          <span class="fw-bold">{{ transaction.description }}</span><br>
+          <small class="text-muted">
+            <i class="fa-solid fa-calendar"></i> {{ transaction.created_at|date:"d M Y" }} &nbsp;
+            <i class="fa-regular fa-clock"></i> {{ transaction.created_at|date:"h:i A" }}
+          </small>
+        </div>
+
+        <div class="d-flex align-items-center">
+          <div class="text-end me-3">
+            <span class="fw-bold">
+              <i class="fa-solid fa-indian-rupee-sign"></i> {{ transaction.amount }}
+            </span><br>
+            {% if transaction.expense_type == 'Debit' %}
+            <span class="text-danger"><i class="fa-solid fa-arrow-down"></i> Debit</span>
+            {% else %}
+            <span class="text-success"><i class="fa-solid fa-arrow-up"></i> Credit</span>
+            {% endif %}
+          </div>
+
+          <!-- Delete Button -->
+          <a class="btn btn-sm btn-outline-danger delete-btn" href="#"
+            data-url="{% url 'delete-transaction' transaction.id %}">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </a>
+        </div>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <div class="alert alert-info text-center mt-3">
+    <i class="fa-solid fa-circle-info"></i> No transaction history available
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -3,10 +3,9 @@ from django.contrib import messages
 from .models import TrackingHistory, CurrentBalance
 from decimal import Decimal
 from django.db.models import Sum, F
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.db import IntegrityError
 
@@ -16,11 +15,11 @@ def register_view(request):
         return redirect("index")
 
     if request.method == "POST":
-        username = request.POST.get("username","").strip()
-        first_name = request.POST.get("first_name","").strip()
-        last_name = request.POST.get("last_name","").strip()
-        email = request.POST.get("email","").strip()
-        password = request.POST.get("password","").strip()
+        username = request.POST.get("username", "").strip()
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "").strip()
 
         if not all([username, first_name, last_name, email, password]):
             messages.warning(request, "All fields are required.")
@@ -110,6 +109,7 @@ def logout_view(request):
     return redirect("login")
 
 
+@login_required(login_url="login")
 def index(request):
     if request.method == "POST":
         description = request.POST.get("description").strip()
@@ -190,6 +190,7 @@ def deleteTransaction(request, id):
 
         # Delete the transaction
         transaction.delete()
+        messages.success(request, "Transaction deleted successfully.")
 
         # Check if any transactions exist
         if not TrackingHistory.objects.exists():
@@ -198,3 +199,9 @@ def deleteTransaction(request, id):
             current_balance.save()
 
     return redirect("index")
+
+
+def all_transactions(request):
+    transactions = TrackingHistory.objects.all().order_by("-created_at")
+    context = {"transactions": transactions}
+    return render(request, "tracker/all_transactions.html", context)
